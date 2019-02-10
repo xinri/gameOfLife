@@ -24,4 +24,7 @@ public class BoardShould {
     assertThat(result[1]).isEqualTo("- - -");
     assertThat(result[2]).isEqualTo("- - -");
   }
+
+  @Test
+  public void
 }

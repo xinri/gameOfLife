@@ -9,6 +9,10 @@ public class Board {
   }
 
   public String[] getBoard() {
-    return null;
+    return new String[] {
+        "- - -",
+        "- - -",
+        "- - -"
+    };
   }
 }
