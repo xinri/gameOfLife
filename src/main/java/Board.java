@@ -24,38 +24,17 @@ public class Board {
     for (int row = 0; row < boardHeight; row++) {
       for (int column = 0; column < boardLength; column++) {
 
-        long deadCells = getSurroundedDeadCellsCount(row, column);
+        long aliveCells = getSurroundedAliveCellsCount(row, column);
 
-        long cellAlive = 8 - deadCells;
-
-        if (board[row][column] == Cell.ALIVE) {
-          ruleForAliveCell(updatedBoard, row, column, cellAlive);
-        } else {
-          ruleForDeadCell(updatedBoard, row, column, cellAlive);
-        }
+        updatedBoard[row][column] =
+            board[row][column].getNextState(aliveCells);
       }
     }
 
     this.board = updatedBoard;
   }
 
-  private void ruleForDeadCell(Cell[][] boardToUpdate, int row, int column, long cellAlive) {
-    if (cellAlive == 3) {
-      boardToUpdate[row][column] = Cell.ALIVE;
-    } else {
-      boardToUpdate[row][column] = Cell.DEAD;
-    }
-  }
-
-  private void ruleForAliveCell(Cell[][] boardToUpdate, int row, int column, long cellAlive) {
-    if (cellAlive < 2 || cellAlive > 3) {
-      boardToUpdate[row][column] = Cell.DEAD;
-    } else {
-      boardToUpdate[row][column] = Cell.ALIVE;
-    }
-  }
-
-  private long getSurroundedDeadCellsCount(int row, int column) {
+  private long getSurroundedAliveCellsCount(int row, int column) {
     return Arrays.asList(
         getCell(row - 1, column - 1),
         getCell(row, column - 1),
@@ -65,25 +44,16 @@ public class Board {
         getCell(row - 1, column + 1),
         getCell(row, column + 1),
         getCell(row + 1, column + 1)).stream()
-        .filter(cell -> cell == Cell.DEAD)
+        .filter(cell -> cell == Cell.ALIVE)
         .count();
   }
 
   private Cell getCell(int row, int column) {
-    if (row < 0 || row >= boardHeight) {
-      return Cell.DEAD;
-    }
-
-    if (column < 0 || column >= boardLength) {
-      return Cell.DEAD;
-    }
-
-    return board[row][column];
+    return Cell.isOutOfBoundCell(row, column, boardHeight, boardLength) ?
+        Cell.DEAD : board[row][column];
   }
 
   public String[] getBoard() {
     return BoardUtils.toStringRepresentation(board);
   }
-
-
 }
