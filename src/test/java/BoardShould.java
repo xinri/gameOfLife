@@ -26,5 +26,44 @@ public class BoardShould {
   }
 
   @Test
-  public void
+  public void die_when_the_cell_is_surround_by_4_dead_cells() {
+    // given
+    Board board = new Board();
+    board.setBoard(
+        new String[]{
+            "- - -",
+            "- * -",
+            "- - -"
+        });
+
+    // when
+    board.nextStep();
+    String[] result = board.getBoard();
+
+    // then
+    assertThat(result[0]).isEqualTo("- - -");
+    assertThat(result[1]).isEqualTo("- - -");
+    assertThat(result[2]).isEqualTo("- - -");
+  }
+
+  @Test
+  public void die_when_the_cell_is_surround_by_3_dead_cells() {
+    // given
+    Board board = new Board();
+    board.setBoard(
+        new String[]{
+            "- - -",
+            "- * *",
+            "- - -"
+        });
+
+    // when
+    board.nextStep();
+    String[] result = board.getBoard();
+
+    // then
+    assertThat(result[0]).isEqualTo("- - -");
+    assertThat(result[1]).isEqualTo("- - -");
+    assertThat(result[2]).isEqualTo("- - -");
+  }
 }
