@@ -1,41 +1,89 @@
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public class Board {
 
   private Cell[][] board;
+  private int boardLength;
+  private int boardHeight;
 
   public void setBoard(String[] boardRepresentation) {
 
-    int length = boardRepresentation[0]
+    this.boardLength = boardRepresentation[0]
         .replaceAll(" ", "")
         .length();
 
-    int height = boardRepresentation.length;
+    this.boardHeight = boardRepresentation.length;
 
-    this.board = new Cell[height][length];
-
-    for (int j = 0; j < height; j++) {
-      for (int i = 0; i < length; i++) {
-        if (boardRepresentation[j].charAt(i*2) == '-') {
-          board[j][i] = Cell.DEAD;
-        } else {
-          board[j][i] = Cell.ALIVE;
-        }
-      }
-    }
+    this.board = BoardUtils.toCellRepresentation(boardRepresentation, boardLength, boardHeight);
   }
 
   public void nextStep() {
 
+    Cell[][] updatedBoard = new Cell[boardHeight][boardLength];
+
+    for (int row = 0; row < boardHeight; row++) {
+      for (int column = 0; column < boardLength; column++) {
+
+        long deadCells = getSurroundedDeadCellsCount(row, column);
+
+        long cellAlive = 8 - deadCells;
+
+        if (board[row][column] == Cell.ALIVE) {
+          ruleForAliveCell(updatedBoard, row, column, cellAlive);
+        } else {
+          ruleForDeadCell(updatedBoard, row, column, cellAlive);
+        }
+      }
+    }
+
+    this.board = updatedBoard;
+  }
+
+  private void ruleForDeadCell(Cell[][] boardToUpdate, int row, int column, long cellAlive) {
+    if (cellAlive == 3) {
+      boardToUpdate[row][column] = Cell.ALIVE;
+    } else {
+      boardToUpdate[row][column] = Cell.DEAD;
+    }
+  }
+
+  private void ruleForAliveCell(Cell[][] boardToUpdate, int row, int column, long cellAlive) {
+    if (cellAlive < 2 || cellAlive > 3) {
+      boardToUpdate[row][column] = Cell.DEAD;
+    } else {
+      boardToUpdate[row][column] = Cell.ALIVE;
+    }
+  }
+
+  private long getSurroundedDeadCellsCount(int row, int column) {
+    return Arrays.asList(
+        getCell(row - 1, column - 1),
+        getCell(row, column - 1),
+        getCell(row + 1, column - 1),
+        getCell(row - 1, column),
+        getCell(row + 1, column),
+        getCell(row - 1, column + 1),
+        getCell(row, column + 1),
+        getCell(row + 1, column + 1)).stream()
+        .filter(cell -> cell == Cell.DEAD)
+        .count();
+  }
+
+  private Cell getCell(int row, int column) {
+    if (row < 0 || row >= boardHeight) {
+      return Cell.DEAD;
+    }
+
+    if (column < 0 || column >= boardLength) {
+      return Cell.DEAD;
+    }
+
+    return board[row][column];
   }
 
   public String[] getBoard() {
-    return Arrays.stream(board)
-        .map(line ->
-            Arrays.stream(line)
-              .map(cell -> cell == Cell.ALIVE ? "*" : "-")
-              .collect(Collectors.joining(" ")))
-        .toArray(String[]::new);
+    return BoardUtils.toStringRepresentation(board);
   }
+
+
 }
