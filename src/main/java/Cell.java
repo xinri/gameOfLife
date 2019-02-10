@@ -17,9 +17,6 @@ public enum Cell {
 
   public static boolean isOutOfBoundCell(
       int row, int column, int height, int length) {
-    if (row < 0 || row >= height || column < 0 || column >= length) {
-      return true;
-    }
-    return false;
+    return (row < 0 || row >= height || column < 0 || column >= length);
   }
 }
